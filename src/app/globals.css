@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-hover: #1d4ed8; /* blue-700 */
+  --color-secondary: #ffffff;
+  --color-accent: #f97316; /* orange-500 */
+  --color-accent-hover: #ea580c; /* orange-600 */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+:root {
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #0f172a; /* slate-900 */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #e2e8f0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f8fafc; /* slate-50 */
+    --card: #1e293b; /* slate-800 */
+    --card-foreground: #f8fafc;
+    --border: #334155;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  @apply antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Input fields always have white background and dark text */
+input, textarea, select {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+  outline: none !important;
+}
+
+/* Custom Utilities for smooth animations and transitions */
+@layer utilities {
+  .transition-default {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .card-shadow {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)];
+  }
+  .dark .card-shadow {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)];
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20;
+  }
+  .glass-dark {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent;
+  }
+  .text-gradient-warm {
+    @apply bg-gradient-to-r from-accent to-amber-500 bg-clip-text text-transparent;
+  }
+}
+
+/* Hero mesh gradient animation */
+@keyframes mesh-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-mesh-float {
+  animation: mesh-float 20s ease-in-out infinite;
+}
+
+.animate-mesh-float-delayed {
+  animation: mesh-float 25s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
 }
