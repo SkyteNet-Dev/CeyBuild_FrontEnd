@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 import api from "@/lib/axios";
 import { useI18n } from "@/i18n/I18nProvider";
 import { compressImage, formatFileSize } from "@/lib/image-compress";
-import Image from "next/image";
 
 type ImageCard = {
   id: string;
@@ -242,7 +241,7 @@ export default function PortfolioPage() {
                 key={img.id}
                 className="relative group rounded-xl overflow-hidden aspect-square border border-gray-200 bg-gray-50"
               >
-                <Image src={img.url} alt="Portfolio" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
+                <img src={img.url} alt="Portfolio" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => setPreviewImage(img.url)}
@@ -304,9 +303,7 @@ export default function PortfolioPage() {
                 key={img.id}
                 className="relative group rounded-xl overflow-hidden aspect-square border border-gray-200 bg-gray-50 flex items-center justify-center"
               >
-                <div className="relative w-full h-full p-2">
-                  <Image src={img.url} alt="Document" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-contain p-2" />
-                </div>
+                <img src={img.url} alt="Document" className="max-w-full max-h-full object-contain p-2" />
                 <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-gray-700 uppercase">
                   {img.type}
                 </div>

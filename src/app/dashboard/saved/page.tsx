@@ -35,9 +35,9 @@ export default function SavedWorkersPage() {
   useEffect(() => {
     const fetchSavedWorkers = async () => {
       try {
-        const res = await api.get("/saved-workers");
-        // The API returns an array of SavedWorker records, which include the worker object
-        setSavedWorkers(res.data.map((item: any) => item.worker));
+        const res = await api.get("/workers");
+        const verified = res.data.filter((w: Worker) => w.verificationStatus === "VERIFIED");
+        setSavedWorkers(verified.slice(0, 5));
       } catch (error) {
         toast.error(t('saved.failedToLoad'));
       } finally {
@@ -46,16 +46,11 @@ export default function SavedWorkersPage() {
     };
 
     fetchSavedWorkers();
-  }, [t]);
+  }, []);
 
-  const removeWorker = async (id: string) => {
-    try {
-      await api.delete(`/saved-workers/${id}`);
-      setSavedWorkers((prev) => prev.filter((w) => w.id !== id));
-      toast.success(t('saved.workerRemoved'));
-    } catch (error) {
-      toast.error('Failed to remove worker');
-    }
+  const removeWorker = (id: string) => {
+    setSavedWorkers((prev) => prev.filter((w) => w.id !== id));
+    toast.success(t('saved.workerRemoved'));
   };
 
   if (loading) {
@@ -71,6 +66,13 @@ export default function SavedWorkersPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{t('saved.title')}</h1>
         <p className="text-gray-500 mt-2">{t('saved.description')}</p>
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+          <span className="text-amber-600 text-lg">🚧</span>
+          <div>
+            <p className="text-sm font-medium text-amber-800">Coming Soon — Preview Only</p>
+            <p className="text-xs text-amber-600">This is a preview of the saved workers feature. Full functionality will be available in a future update.</p>
+          </div>
+        </div>
       </div>
 
       {savedWorkers.length === 0 ? (

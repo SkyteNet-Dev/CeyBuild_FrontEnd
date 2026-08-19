@@ -13,7 +13,6 @@ import * as z from "zod";
 import api from "@/lib/axios";
 import { useI18n } from "@/i18n/I18nProvider";
 import AvailabilityMiniCalendar from "@/components/availability/AvailabilityMiniCalendar";
-import Image from "next/image";
 
 const PROVINCES = [
   "Western", "Central", "Southern", "Northern", "Eastern",
@@ -84,8 +83,6 @@ export default function WorkerProfile() {
   const [selectedBookingDate, setSelectedBookingDate] = useState<string>("");
   const [availableSlots, setAvailableSlots] = useState<{ time: string; available: boolean; reason?: string }[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [savingWorker, setSavingWorker] = useState(false);
   const pendingBookingRef = useRef<BookingFormValues | null>(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<BookingFormValues>({
@@ -125,19 +122,6 @@ export default function WorkerProfile() {
     };
     fetchAvailability();
   }, [id]);
-
-  useEffect(() => {
-    if (!user || !id) return;
-    const checkSaved = async () => {
-      try {
-        const res = await api.get(`/saved-workers/${id}/check`);
-        setIsSaved(res.data.isSaved);
-      } catch (error) {
-        console.error("Failed to check saved status", error);
-      }
-    };
-    checkSaved();
-  }, [user, id]);
 
   useEffect(() => {
     if (!user || !id) return;
@@ -205,29 +189,6 @@ export default function WorkerProfile() {
     }
   }, [user, submitBooking]);
 
-  const toggleSaveWorker = async () => {
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
-    setSavingWorker(true);
-    try {
-      if (isSaved) {
-        await api.delete(`/saved-workers/${id}`);
-        setIsSaved(false);
-        toast.success(t('saved.workerRemoved') || "Worker removed from saved");
-      } else {
-        await api.post(`/saved-workers/${id}`);
-        setIsSaved(true);
-        toast.success("Worker saved successfully");
-      }
-    } catch (error) {
-      toast.error("Failed to update saved status");
-    } finally {
-      setSavingWorker(false);
-    }
-  };
-
   // Fetch available slots when date changes
   useEffect(() => {
     if (!selectedBookingDate || !id) {
@@ -275,9 +236,9 @@ export default function WorkerProfile() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
-            <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-200 rounded-full border-4 border-white shadow-xl shrink-0 overflow-hidden relative">
+            <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-200 rounded-full border-4 border-white shadow-xl shrink-0 overflow-hidden">
                {worker.user?.profileImage ? (
-                  <Image src={worker.user.profileImage} alt={worker.user.fullName} fill sizes="(max-width: 768px) 128px, 160px" className="object-cover" />
+                  <img src={worker.user.profileImage} alt={worker.user.fullName} className="w-full h-full object-cover" />
                ) : (
                   <div className="w-full h-full flex items-center justify-center text-primary text-4xl font-bold bg-primary/10">
                     {worker.user?.fullName?.charAt(0) || "W"}
@@ -317,13 +278,6 @@ export default function WorkerProfile() {
                   className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/30 transition-all"
                 >
                   {showBooking ? t('workers.cancelBooking') : t('workers.bookNow')}
-                </button>
-                <button 
-                  onClick={toggleSaveWorker}
-                  disabled={savingWorker}
-                  className={`px-8 py-3 font-bold rounded-xl border transition-all ${isSaved ? 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200' : 'bg-white text-primary border-primary hover:bg-primary/5'} disabled:opacity-50`}
-                >
-                  {isSaved ? "Saved" : "Save"}
                 </button>
               </div>
             </div>
@@ -451,8 +405,8 @@ export default function WorkerProfile() {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {worker.portfolioImages.map((img) => (
-                    <div key={img.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 relative">
-                      <Image src={img.url} alt="Portfolio" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover hover:scale-105 transition-transform duration-300" />
+                    <div key={img.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                      <img src={img.url} alt="Portfolio" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                     </div>
                   ))}
                 </div>
